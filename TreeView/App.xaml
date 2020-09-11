@@ -1,0 +1,10 @@
+﻿<Application
+    x:Class="TreeView.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:TreeView"
+    StartupUri="Main.xaml">
+    <Application.Resources>
+        <local:VmLocator x:Key="VmLocator" />
+    </Application.Resources>
+</Application>
