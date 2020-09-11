@@ -12,7 +12,6 @@ namespace TreeView.Models
 
         public Node()
         {
-            
             Nodes = new ObservableCollection<Node>();
         }
     }
