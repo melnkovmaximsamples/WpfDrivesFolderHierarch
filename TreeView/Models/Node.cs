@@ -5,13 +5,12 @@ namespace TreeView.Models
 {
     public class Node : BindableBase
     {
-        private readonly ObservableCollection<Node> _nodes;
-        public ObservableCollection<Node> Nodes => _nodes;
+        public ObservableCollection<Node> Nodes { get; set; }
         public string Name { get; set; }
 
         public Node()
         {
-            _nodes = new ObservableCollection<Node>();
+            Nodes = new ObservableCollection<Node>();
         }
     }
 }

@@ -13,14 +13,13 @@ namespace TreeView.ViewModels
 {
     public class MainViewModel
     {
-        private readonly ObservableCollection<Node> _root;
-        public ObservableCollection<Node> Root => _root;
+        public ObservableCollection<Node> Root { get; set; }
         public ObservableCollection<string> Drives { get; set; }
         public int DrivesCount => Drives.Count;
 
         public MainViewModel()
         {
-            _root = new ObservableCollection<Node>();
+            Root = new ObservableCollection<Node>();
             var driveNames = GetDriveNames();
             Drives = new ObservableCollection<string>(driveNames);
         }
