@@ -35,16 +35,16 @@ namespace TreeView.ViewModels
                 Root.Add(new Node() { Name = dir });
             }
 
-            await InsertChildrenToNode(Root);
+            await InsertChildrenToNodeAsync(Root);
         }, canExecuteMethod: (path) => !SelectDisk.IsExecuting && !ExpandedCommand.IsExecuting);
 
         private AsyncCommand<Node> _expandedCommand;
         public AsyncCommand<Node> ExpandedCommand => _expandedCommand ??= new AsyncCommand<Node>(async (item) =>
         {
-            await InsertChildrenToNode(item.Nodes);
+            await InsertChildrenToNodeAsync(item.Nodes);
         });
 
-        private async Task InsertChildrenToNode(IEnumerable<Node> parentNodes)
+        private async Task InsertChildrenToNodeAsync(IEnumerable<Node> parentNodes)
         {
             foreach (var node in parentNodes)
             {
@@ -63,7 +63,7 @@ namespace TreeView.ViewModels
         {
             var childrenDirPaths = await Task.Run(() =>
             {
-                Thread.Sleep(50);
+                Thread.Sleep(10);
                 try
                 {
                     return Directory.GetDirectories(parentDirPath, string.Empty, SearchOption.TopDirectoryOnly);
