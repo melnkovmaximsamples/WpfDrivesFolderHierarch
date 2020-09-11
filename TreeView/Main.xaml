@@ -5,6 +5,7 @@
     xmlns:attachedCommandBehavior="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
     xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:data="clr-namespace:System.Data;assembly=System.Data.Common"
     xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm"
     xmlns:local="clr-namespace:TreeView"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -12,8 +13,8 @@
     Title="Main"
     Width="1000"
     Height="800"
-    WindowStartupLocation="CenterScreen"
     DataContext="{Binding Source={StaticResource VmLocator}, Path=MainViewModel}"
+    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
@@ -37,13 +38,14 @@
             </ItemsControl.ItemTemplate>
         </ItemsControl>
 
-        <TreeView Grid.Row="1" ItemsSource="{Binding Path=Root}">
-
+        <TreeView Grid.Row="1" ItemsSource="{Binding Path=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
             <TreeView.ItemContainerStyle>
                 <Style TargetType="{x:Type TreeViewItem}">
-                    <Setter Property="attachedCommandBehavior:CommandBehavior.Event" Value="Expanded" />
-                    <Setter Property="attachedCommandBehavior:CommandBehavior.Command" Value="{Binding DataContext.ExpandedCommand, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" />
-                    <Setter Property="attachedCommandBehavior:CommandBehavior.CommandParameter" Value="{Binding}" />
+                    <Style.Setters>
+                        <Setter Property="attachedCommandBehavior:CommandBehavior.Event" Value="Expanded" />
+                        <Setter Property="attachedCommandBehavior:CommandBehavior.Command" Value="{Binding DataContext.ExpandedCommand, RelativeSource={RelativeSource AncestorType=Window, Mode=FindAncestor}}" />
+                        <Setter Property="attachedCommandBehavior:CommandBehavior.CommandParameter" Value="{Binding}" />
+                    </Style.Setters>
                 </Style>
             </TreeView.ItemContainerStyle>
             <TreeView.Resources>
