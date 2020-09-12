@@ -7,7 +7,7 @@ namespace TreeView.Models
 {
     public class Node: BindableBase
     {
-        public ObservableCollection<Node> Nodes { get; set; }
+        public ObservableCollection<Node> Nodes { get; }
         public string Name { get; set; }
 
         public Node()

@@ -7,15 +7,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DevExpress.Mvvm;
-using TreeView.Extensions;
 using TreeView.Models;
 
 namespace TreeView.ViewModels
 {
     public class MainViewModel: BindableBase
     {
-        public ObservableCollection<Node> Root { get; set; }
-        public ObservableCollection<string> Drives { get; set; }
+        public ObservableCollection<Node> Root { get; }
+        public ObservableCollection<string> Drives { get; }
         public int DrivesCount => Drives.Count;
 
         public MainViewModel()
@@ -28,7 +27,7 @@ namespace TreeView.ViewModels
         private AsyncCommand<string> _selectDisk;
         public AsyncCommand<string> SelectDisk => _selectDisk  ??= new AsyncCommand<string>(async (path) =>
         {
-            Root.ClearTree();
+            Root.Clear();
 
             var dirs = Directory.GetDirectories(path);
 
