@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using DevExpress.Mvvm;
 using TreeView.Models;
 
@@ -13,54 +14,57 @@ namespace TreeView.ViewModels
 {
     public class MainViewModel: BindableBase
     {
-        public ObservableCollection<Node> Root { get; }
-        public ObservableCollection<string> Drives { get; }
+        public ObservableCollection<DirectoryNode> Roots { get; }
+        private List<string> Drives { get; set; }
         public int DrivesCount => Drives.Count;
 
         public MainViewModel()
         {
-            Root = new ObservableCollection<Node>();
-            var driveNames = GetDriveNames();
-            Drives = new ObservableCollection<string>(driveNames);
+            Roots = new ObservableCollection<DirectoryNode>();
+            Drives = GetDriveNames().ToList();
         }
 
-        private AsyncCommand<string> _selectDisk;
-        public AsyncCommand<string> SelectDisk => _selectDisk  ??= new AsyncCommand<string>(async (path) =>
+        public AsyncCommand EditCommand => new AsyncCommand(async () =>
         {
-            Root.Clear();
-
-            var dirs = Directory.GetDirectories(path);
-
-            foreach (var dir in dirs)
+            foreach (var drivePath in Drives)
             {
-                Root.Add(new Node() { Name = dir });
+                Roots.Add(await GetChildren(drivePath));
             }
-
-            await InsertChildrenToNodeAsync(Root);
-        }, canExecuteMethod: (path) => !SelectDisk.IsExecuting && !ExpandedCommand.IsExecuting);
-
-        private AsyncCommand<Node> _expandedCommand;
-        public AsyncCommand<Node> ExpandedCommand => _expandedCommand ??= new AsyncCommand<Node>(async (item) =>
-        {
-            await InsertChildrenToNodeAsync(item.Nodes);
         });
 
-        private async Task InsertChildrenToNodeAsync(IEnumerable<Node> parentNodes)
+        private async Task<DirectoryNode> GetChildren(string path)
         {
-            foreach (var node in parentNodes)
+            var directories = Directory.GetDirectories(path);
+            var files = Directory.GetFiles(path);
+            
+            var node = new DirectoryNode()
             {
-                if (node.Nodes.Count > 0) continue;
+                Name = path
+            }
+        }
 
-                var childNodes = GetChildrenNodesAsync(node.Name);
+        private AsyncCommand<DirectoryNode> _expandedCommand;
+        public AsyncCommand<DirectoryNode> ExpandedCommand => _expandedCommand ??= new AsyncCommand<DirectoryNode>(async (item) =>
+        {
+            await InsertChildrenToDirectoryNodeAsync(item.Directories);
+        });
+
+        private async Task InsertChildrenToDirectoryNodeAsync(IEnumerable<DirectoryNode> parentDirectories)
+        {
+            foreach (var DirectoryNode in parentDirectories)
+            {
+                if (DirectoryNode.Directories.Count > 0) continue;
+
+                var childDirectories = GetChildrenDirectoriesAsync(DirectoryNode.Name);
                 
-                await foreach (var child in childNodes)
+                await foreach (var child in childDirectories)
                 {
-                    node.Nodes.Add(child);
+                    DirectoryNode.Directories.Add(child);
                 }
             }
         }
 
-        private async IAsyncEnumerable<Node> GetChildrenNodesAsync(string parentDirPath)
+        private async IAsyncEnumerable<DirectoryNode> GetChildrenDirectoriesAsync(string parentDirPath)
         {
             var childrenDirPaths = await Task.Run(() =>
             {
@@ -79,7 +83,16 @@ namespace TreeView.ViewModels
 
             foreach (var dir in childrenDirPaths)
             {
-                yield return new Node() { Name = dir };
+                var fullPath = Path.Combine(parentDirPath, dir);
+                var directoryNode = new DirectoryNode()
+                {
+                    Name = dir,
+                    LastModifiedDt = Directory.GetLastWriteTime(fullPath),
+                    Owner = "Maks"
+
+                };
+                directoryNode.Files.Add(new FileNode(){Name = "LOL"});
+                yield return directoryNode;
             }
         }
 
